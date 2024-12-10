@@ -1,0 +1,64 @@
+body {
+    height: 100vh;
+}
+
+#calendar {
+    max-width: 100%;
+    height: 100%;
+    margin: 20px auto;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Headers for Days of the Week */
+.header {
+    display: flex;
+    justify-content: center;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #555;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+/* Day Cells */
+.day {
+    display: flex;
+    flex-direction: column;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: #333;
+    background-color: #fff;
+    border: 1px solid rgba(221, 221, 221, 0.29);
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    text-align: center;
+    transition: background-color 0.3s, color 0.3s;
+    aspect-ratio: 1/0.5;
+}
+.filler {
+
+    background-color: rgba(255, 255, 255, 0.14);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0);
+}
+
+
+
+/* Hover Effect on Days */
+.day:hover {
+    background-color: #0078d7;
+    color: #fff;
+    cursor: pointer;
+}
