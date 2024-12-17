@@ -96,3 +96,11 @@ DATETIME FORMAT
 //         }
 //     }],
 // };
+
+// Adding events
+addEvent("C03A2C8A", "20241216T130000", "20241216T160000", "Webtechnologie PRO", "Lecture on web technology.");
+addEvent("5384E8FB", "20241221T090000", "20241221T110000", "IT Organisatie PRO", "Discussion on IT organization principles.");
+addEvent("26E609FC", "20241211T110000", "20241211T130000", "IT Essentials PRO", "Core topics of IT essentials.");
+addEvent("A86F13FC", "20241218T140000", "20241218T160000", "Basis programmeren", "Introduction to basic programming concepts.");
+addEvent("D9961AFC", "20241219T160000", "20241219T180000", "Databanken PRO", "Advanced database systems lecture.");
+printEvents();

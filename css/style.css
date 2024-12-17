@@ -33,7 +33,7 @@ body {
 }
 
 /* Day Cells */
-.day {
+.day-grandparent {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -48,18 +48,51 @@ body {
     text-align: center;
     transition: background-color 0.3s, color 0.3s;
     aspect-ratio: 1/0.5;
-    .add-event-button {
-        font-size: 30px;
+    cursor: pointer;
+
+    .day-header {
         display: flex;
-        justify-content: flex-end;
-        border: 1px solid black;
-        width: fit-content;
-        aspect-ratio: 1/1;
-        cursor: pointer;
-        &:hover {
+        flex-direction: row;
+        align-items: center;
+
+        .day-date {
+            display: flex;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .add-event-button {
+            font-size: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid black;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            color: white;
             background-color: rebeccapurple;
+            border-radius: 50%;
+            font-weight: bold;
+            transition: transform 0.3s, background-color 0.3s;
+            margin-left: auto;
+
+            &:hover {
+                background-color: darkorchid;
+                transform: scale(1.1);
+            }
         }
     }
+
+    .day-events-container {
+        display: flex;
+        flex-direction: column;
+
+    }
+
+
+
+
 }
 .filler {
 
@@ -67,15 +100,23 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0);
 }
 
-
-
-/* Hover Effect on Days */
-.day:hover {
-    background-color: #0078d7;
-    color: #fff;
-    cursor: pointer;
-}
-
 .event {
     border: 1px solid black;
+}
+
+#calendar {
+}
+
+.day-grid {
+    border-right: 1px solid #ccc; /* Gentle line effect between columns */
+}
+
+.day-grid:last-child {
+    border-right: none; /* Removes the line at the far-right edge */
+}
+
+.today-highlight {
+    border: 1px solid rebeccapurple; /* Orange border */
+    border-radius: 8px;
+    color: #333; /* Darker text for contrast */
 }
