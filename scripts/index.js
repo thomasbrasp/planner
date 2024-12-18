@@ -1,7 +1,7 @@
 "use strict";
 
 const items = [];
-const headers = ["Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag"];
+const headersWeekDays = ["Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag"];
 const days = [];
 
 
@@ -16,25 +16,12 @@ const createElement = (elementType, elementClass, elementText) => {
     return element;
 };
 
-
-function convertIcsToJavascript(timeString) {
-    const YYYY = timeString.slice(0, 4);
-    const MM = timeString.slice(4, 6);
-    const DD = timeString.slice(6, 8);
-    const hh = timeString.slice(9, 11) || '00';
-    const mm = timeString.slice(11, 13) || '00';
-    const ss = timeString.slice(13, 15) || '00';
-
-    // Remove any trailing ':' if values are incomplete
-    return `${YYYY}-${MM}-${DD}T${hh.padStart(2, '0')}:${mm.padStart(2, '0')}:${ss.padStart(2, '0')}`;
-}
-
-
-const addEvent = (uid, dtStart, dtEnd, summary, description) => {
+const addEvent = (uid, date, startHour, endHour, summary, description) => {
     let newEvent = {
         uid: uid,
-        dtStart: convertIcsToJavascript(dtStart),
-        dtEnd: convertIcsToJavascript(dtEnd),
+        date: date,
+        startHour: startHour,
+        endHour: endHour,
         summary: summary,
         description: description,
     };
@@ -44,12 +31,11 @@ const addEvent = (uid, dtStart, dtEnd, summary, description) => {
 
 const generateCalendar = (year = new Date().getFullYear(), month = new Date().getMonth()) => {
 
-
     //CLEAR PREVIOUS CONTENT + WRITE HEADER + LOGICAL PART OF GETTING THE AMOUNT OF DAYS RIGHT
     const calendar = document.getElementById("calendar");
     calendar.innerHTML = ""; // Clear any previous content
 
-    headers.forEach(day => {
+    headersWeekDays.forEach(day => {
         const headerDiv = createElement("header", "header", day);
         calendar.appendChild(headerDiv);
     }); //HEADERS FOR CALENDAR
@@ -98,8 +84,9 @@ const printEvents = () => {
     console.log("Current Events:");
     items.forEach(event => {
         console.log(`UID: ${event.uid}`);
-        console.log(`Start: ${event.dtStart}`);
-        console.log(`End: ${event.dtEnd}`);
+        console.log(`Date: ${event.date}`)
+        console.log(`Start: ${event.startHour}`);
+        console.log(`End: ${event.endHour}`);
         console.log(`Summary: ${event.summary}`);
         console.log(`Description: ${event.description}`);
         console.log("--------");
@@ -137,14 +124,13 @@ document.querySelectorAll('.add-event-button').forEach(button => {
             // Calculate the end time
             const [startHour, startMinute] = startTime.split(':').map(num => parseInt(num, 10));
             const endHour = startHour + parseInt(duration, 10);
-            const endTime = `${String(endHour).padStart(2, '0')}${String(startMinute).padStart(2, '0')}00`;
+            const endTime = `${String(endHour).padStart(2, '0')}${String(startMinute).padStart(2, '0')}`;
 
             addEvent(
                 `UID${Date.now()}`, // Generate a UID based on timestamp
-                convertIcsToJavascript(dtStart),
-                convertIcsToJavascript(dtEnd),
-                `${formattedDate}T${startTime}`,
-                `${formattedDate}T${endTime}`,
+                formattedDate, // Add date to the event object
+                startTime.split(':').join(''), // Convert start time to HHMM format
+                endTime.split(':').join(''), // Convert end time to HHMM format
                 summary,
                 description
             );
