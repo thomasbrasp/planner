@@ -105,6 +105,9 @@ body {
 .event {
     border: 1px solid black;
 }
+.event-time {
+    display: flex;
+}
 
 #calendar {
 }

@@ -1,18 +1,10 @@
 [
   {
-    "uid": "TEST",
-    "date": "20241201",
-    "startHour": "11:00",
-    "endHour": "12:00",
-    "summary": "summary",
-    "description": "description"
-  },
-  {
-    "uid": "TEST",
-    "date": "20241212",
-    "startHour": "11:00",
-    "endHour": "12:00",
-    "summary": "summary 2",
-    "description": "description"
+    "uid": "UID1734711485057",
+    "date": "20241205",
+    "startHour": "1700",
+    "endHour": "1800",
+    "summary": "Test Event",
+    "description": "t"
   }
 ]
