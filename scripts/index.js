@@ -26,12 +26,15 @@ const addEvent = (uid, date, startHour, endHour, summary, description) => {
         description: description,
     };
     items.push(newEvent);
-    console.log(JSON.stringify(items));
+    printEvents();
 
     return items;
 } //add events to items
+
 const printEvents = () => {
+    console.clear();
     console.log(JSON.stringify(items))
+    navigator.clipboard.writeText(JSON.stringify(items));
 }; //prints all events into log
 
 const fetchItems = async () => {
@@ -44,12 +47,15 @@ const fetchItems = async () => {
 }
 
 const fillCalender = () => {
-    const goodbye =  document.getElementsByClassName('event')
-    for (let goodbyeElement of goodbye) {
-        goodbyeElement.parentNode.removeChild(goodbyeElement);
-    }
-    items.forEach(item => {
+
+    document.querySelectorAll('.day-events-container').forEach(container => {
+        container.innerHTML = ""; // Fully clear each container
+    });
+    items.sort((a, b) => a.startHour.localeCompare(b.startHour)).forEach(item => {
         const x = document.getElementById(item.date);
+        if (!x) {
+            return;
+        }
         console.log(x)
         // Create the event element
 
@@ -86,7 +92,6 @@ const fillCalender = () => {
             items[index] = event;
             fillCalender()
         });
-
         eventEndHour.addEventListener('click', e => {
             const event = items.find(item => item.uid + '-end' === e.target.id);
             const index = items.indexOf(event)
@@ -103,61 +108,122 @@ const fillCalender = () => {
             items[index] = event;
             fillCalender()
         });
+        printEvents();
 
     })
 }
 
+const generateCalendar = async (year = new Date().getFullYear(), month = new Date().getMonth()) => {
+    
+    //CLEAR PREVIOUS CONTENT + WRITE HEADER + LOGICAL PART OF GETTING THE AMOUNT OF DAYS RIGHT
+    const calendar = document.getElementById("calendar");
+    calendar.innerHTML = ""; // Clear any previous content
 
-document.querySelectorAll('.add-event-button').forEach(button => {
-    button.addEventListener('click', () => {
-        const dateSelected = button.parentElement.querySelector('.day-date').textContent;
-        const dayContainer = button.parentElement.parentElement.querySelector('.day-events-container');
 
-        const year = new Date().getFullYear();
-        const month = new Date().getMonth();
+// Add buttons for navigating the calendar
+    const navigationContainer = createElement('div', 'navigation-container');
 
-        const startTime = prompt("Enter start time in HH:MM format (e.g., 13:00):");
-        if (!startTime) return; // Exit if 'Cancel' is pressed
+// Create "Previous Month" button
+    const prevButton = createElement('button', 'prev-button', '←');
+    prevButton.id = 'prev-month';
+    navigationContainer.appendChild(prevButton);
 
-        const endTime = prompt("Enter end time in HH:MM format (e.g., 15:00):");
-        if (!endTime) return;
+// Create "Next Month" button
+    const nextButton = createElement('button', 'next-button', '→');
+    nextButton.id = 'next-month';
+    navigationContainer.appendChild(nextButton);
 
-        const summary = prompt("Enter event summary:");
-        if (!summary) return;
+// Append navigation buttons to the calendar
+    calendar.parentElement.insertBefore(navigationContainer, calendar);
+    
+    headersWeekDays.forEach(day => {
+        const headerDiv = createElement("header", "header", day);
+        calendar.appendChild(headerDiv);
+    }); //HEADERS FOR CALENDAR
 
-        const description = prompt("Enter event description:");
-        if (!description) return;
+    // Get the first day of the month and total days in the month
+    const firstDay = new Date(year, month, 0).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-        // Add the event to the `items` array
-        const formattedDate = `${String(year)}${String(month + 1).padStart(2, '0')}${String(dateSelected).padStart(2, '0')}`;
-        const uID = `UID${Date.now()}`
-        addEvent(
-            uID,
-            formattedDate,
-            startTime.split(':').join(''),
-            endTime.split(':').join(''),
-            summary,
-            description
-        );
+    // Get today's date
+    const today = new Date();
+    const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+    const currentDate = today.getDate();
 
-        // Create the event element
-        const eventDiv = createElement('div', 'event');
-        eventDiv.id = uID;
+    // Add blank spaces for days before the first day
+    for (let i = 0; i < firstDay; i++) {
+        const blank = document.createElement("div");
+        blank.classList.add('filler');
+        calendar.appendChild(blank);
+    }
 
-        const eventTime = createElement('div', 'event-time', `${startTime} - ${endTime}`);
-        const eventSummary = createElement('div', 'event-summary', summary);
+    // Add the days of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dayRaster = createElement('div', 'day-grandparent');
+        const dayHeader = createElement('div', 'day-header');
+        const dayDate = createElement('div', 'day-date', `${day}`);
+        const addEventButton = createElement('button', 'add-event-button', '+')
+        dayHeader.appendChild(dayDate)
+        dayHeader.appendChild(addEventButton)
+        const dayEventsContainer = createElement('div', 'day-events-container');
+        dayEventsContainer.id = `${year}${month+1}${day < 10 ? "0" + day : day}`;
 
-        eventDiv.appendChild(eventTime);
-        eventDiv.appendChild(eventSummary);
+        dayRaster.appendChild(dayHeader)
+        dayRaster.appendChild(dayEventsContainer)
 
-        // Append the event to the correct day's event container
-        dayContainer.appendChild(eventDiv);
-        eventDiv.addEventListener('click', e => {
-            console.log(e.target)
+
+        if (isCurrentMonth && day === currentDate) {
+            dayRaster.classList.add("today-highlight"); // Add highlight class
+        }
+        calendar.appendChild(dayRaster);
+    }
+}
+generateCalendar(); // Default is current date, optional parameters are (year, month (0 indexed))
+fetchItems().then(() => {
+    fillCalender();
+});
+
+const addEventButton = () =>
+{
+    document.querySelectorAll('.add-event-button').forEach(button => {
+        button.addEventListener('click', () => {
+            const dateSelected = button.parentElement.querySelector('.day-date').textContent;
+            const dayContainer = button.parentElement.parentElement.querySelector('.day-events-container');
+
+            const year = new Date().getFullYear();
+            const month = new Date().getMonth();
+
+
+
+
+            const startTime = prompt("Enter start time in HH:MM format (e.g., 13:00):");
+            if (!startTime) return; // Exit if 'Cancel' is pressed
+
+            const endTime = prompt("Enter end time in HH:MM format (e.g., 15:00):");
+            if (!endTime) return;
+
+            const summary = prompt("Enter event summary:");
+            // if (!summary) return;
+
+            const description = prompt("Enter event description:");
+            // if (!description) return;
+
+            // Add the event to the `items` array
+            const formattedDate = `${String(year)}${String(month + 1).padStart(2, '0')}${String(dateSelected).padStart(2, '0')}`;
+            const uID = `UID${Date.now()}`
+            addEvent(
+                uID,
+                formattedDate,
+                startTime.split(':').join(''),
+                endTime.split(':').join(''),
+                summary,
+                description
+            );
+            fillCalender();
         });
     });
-}); //add event listener to the add event button
-
+}//add event listener to the add event button
+addEventButton();
 
 
 
@@ -216,55 +282,5 @@ document.querySelectorAll('.add-event-button').forEach(button => {
 
 
 
-const generateCalendar = async (year = new Date().getFullYear(), month = new Date().getMonth()) => {
-    //CLEAR PREVIOUS CONTENT + WRITE HEADER + LOGICAL PART OF GETTING THE AMOUNT OF DAYS RIGHT
-    const calendar = document.getElementById("calendar");
-    calendar.innerHTML = ""; // Clear any previous content
 
-    headersWeekDays.forEach(day => {
-        const headerDiv = createElement("header", "header", day);
-        calendar.appendChild(headerDiv);
-    }); //HEADERS FOR CALENDAR
-
-    // Get the first day of the month and total days in the month
-    const firstDay = new Date(year, month, 0).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    // Get today's date
-    const today = new Date();
-    const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
-    const currentDate = today.getDate();
-
-    // Add blank spaces for days before the first day
-    for (let i = 0; i < firstDay; i++) {
-        const blank = document.createElement("div");
-        blank.classList.add('filler');
-        calendar.appendChild(blank);
-    }
-
-    // Add the days of the month
-    for (let day = 1; day <= daysInMonth; day++) {
-        const dayRaster = createElement('div', 'day-grandparent');
-        const dayHeader = createElement('div', 'day-header');
-        const dayDate = createElement('div', 'day-date', `${day}`);
-        const addEventButton = createElement('button', 'add-event-button', '+')
-        dayHeader.appendChild(dayDate)
-        dayHeader.appendChild(addEventButton)
-        const dayEventsContainer = createElement('div', 'day-events-container');
-        dayEventsContainer.id = `${year}${month+1}${day < 10 ? "0" + day : day}`;
-
-        dayRaster.appendChild(dayHeader)
-        dayRaster.appendChild(dayEventsContainer)
-
-
-        if (isCurrentMonth && day === currentDate) {
-            dayRaster.classList.add("today-highlight"); // Add highlight class
-        }
-        calendar.appendChild(dayRaster);
-    }
-}
-generateCalendar(); // Default is current date, optional parameters are (year, month (0 indexed))
-fetchItems().then(() => {
-    fillCalender();
-});
 
