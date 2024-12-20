@@ -104,3 +104,52 @@ addEvent("26E609FC", "20241211T110000", "20241211T130000", "IT Essentials PRO", 
 addEvent("A86F13FC", "20241218T140000", "20241218T160000", "Basis programmeren", "Introduction to basic programming concepts.");
 addEvent("D9961AFC", "20241219T160000", "20241219T180000", "Databanken PRO", "Advanced database systems lecture.");
 printEvents();
+
+// ADD EVENT BUTTON EVENT LISTENER
+// document.querySelectorAll('.add-event-button').forEach(button => {
+//     button.addEventListener('click', () => {
+//         const dateSelected = button.parentElement.querySelector('.day-date').textContent;
+//
+//         const year = new Date().getFullYear();
+//         const month = new Date().getMonth();
+//
+//         const startTime = prompt("Enter start time in HH:MM format (e.g., 13:00):");
+//         if (startTime === null) {
+//             return; // Exit if 'Cancel' is pressed on the first prompt
+//         }
+//         const duration = prompt("Enter event duration in hours (e.g., 2):");
+//         if (duration === null) {
+//             return; // Exit if 'Cancel' is pressed on the second prompt
+//         }
+//         const summary = prompt("Enter event summary:");
+//         if (summary === null) {
+//             return; // Exit if 'Cancel' is pressed on the third prompt
+//         }
+//         const description = prompt("Enter event description:");
+//         if (description === null) {
+//             return; // Exit if 'Cancel' is pressed on the fourth prompt
+//         }
+//
+//         if (startTime && duration && summary && description) {
+//             const formattedDate = `${String(year)}${String(month + 1).padStart(2, '0')}${String(dateSelected).padStart(2, '0')}`;
+//
+//             // Calculate the end time
+//             const [startHour, startMinute] = startTime.split(':').map(num => parseInt(num, 10));
+//             const endHour = startHour + parseInt(duration, 10);
+//             const endTime = `${String(endHour).padStart(2, '0')}${String(startMinute).padStart(2, '0')}`;
+//
+//             addEvent(
+//                 `UID${Date.now()}`, // Generate a UID based on timestamp
+//                 formattedDate, // Add date to the event object
+//                 startTime.split(':').join(''), // Convert start time to HHMM format
+//                 endTime.split(':').join(''), // Convert end time to HHMM format
+//                 summary,
+//                 description
+//             );
+//
+//             // Re-render the calendar to include the new event
+//             printEvents();
+//             generateCalendar(year, month);
+//         }
+//     });
+// });

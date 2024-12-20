@@ -16,7 +16,7 @@ const createElement = (elementType, elementClass, elementText) => {
     return element;
 };
 
-const addEvent = (uid, date, startHour, endHour, summary, description) => {
+const addEvent = async (uid, date, startHour, endHour, summary, description) => {
     let newEvent = {
         uid: uid,
         date: date,
@@ -26,8 +26,35 @@ const addEvent = (uid, date, startHour, endHour, summary, description) => {
         description: description,
     };
     items.push(newEvent);
+
+    const response = await fetch('../events.json');
+    const events = await response.json();
+
+    events.push(newEvent);
+
+    await fetch('../events.json', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(events),
+    });
+
     return items;
-}
+} //add events to items
+
+const printEvents = () => {
+    console.log("Current Events:");
+    items.forEach(event => {
+        console.log(`UID: ${event.uid}`);
+        console.log(`Date: ${event.date}`)
+        console.log(`Start: ${event.startHour}`);
+        console.log(`End: ${event.endHour}`);
+        console.log(`Summary: ${event.summary}`);
+        console.log(`Description: ${event.description}`);
+        console.log("--------");
+    });
+}; //prints all events into log
 
 const generateCalendar = (year = new Date().getFullYear(), month = new Date().getMonth()) => {
 
@@ -65,6 +92,7 @@ const generateCalendar = (year = new Date().getFullYear(), month = new Date().ge
         dayHeader.appendChild(dayDate)
         dayHeader.appendChild(addEventButton)
         const dayEventsContainer = createElement('div', 'day-events-container');
+        dayEventsContainer.id = `${year}${month+1}${day < 10 ? "0" + day : day}`;
 
         dayRaster.appendChild(dayHeader)
         dayRaster.appendChild(dayEventsContainer)
@@ -75,72 +103,76 @@ const generateCalendar = (year = new Date().getFullYear(), month = new Date().ge
         }
         calendar.appendChild(dayRaster);
     }
+
+    fetch("../events.json").then(e => e.json()).then(d => {
+        d.forEach(e => {
+            const x = document.getElementById(e.date);
+            console.log(x)
+            // Create the event element
+            const eventDiv = createElement('div', 'event');
+            const eventTime = createElement('div', 'event-time', `${e.startHour} - ${e.endHour}`);
+            const eventSummary = createElement('div', 'event-summary', e.summary);
+
+            eventDiv.appendChild(eventTime);
+            eventDiv.appendChild(eventSummary);
+
+            // Append the event to the correct day's event container
+            x.appendChild(eventDiv);
+        })
+    });
 }
-// Example: Generate December 2024 calendar
 generateCalendar(); // Default is current date, optional parameters are (year, month (0 indexed))
 
-
-const printEvents = () => {
-    console.log("Current Events:");
-    items.forEach(event => {
-        console.log(`UID: ${event.uid}`);
-        console.log(`Date: ${event.date}`)
-        console.log(`Start: ${event.startHour}`);
-        console.log(`End: ${event.endHour}`);
-        console.log(`Summary: ${event.summary}`);
-        console.log(`Description: ${event.description}`);
-        console.log("--------");
+document.querySelectorAll('.day-events-container').forEach(dayEventContainer => {
+    dayEventContainer.addEventListener('click', () => {
+        console.log("clicked day")
     });
-};
+});
 
-// ADD EVENT BUTTON EVENT LISTENER
+
 document.querySelectorAll('.add-event-button').forEach(button => {
-    button.addEventListener('click', () => {
+    button.addEventListener('click', async() => {
         const dateSelected = button.parentElement.querySelector('.day-date').textContent;
+        const dayContainer = button.parentElement.parentElement.querySelector('.day-events-container');
 
         const year = new Date().getFullYear();
         const month = new Date().getMonth();
 
         const startTime = prompt("Enter start time in HH:MM format (e.g., 13:00):");
-        if (startTime === null) {
-            return; // Exit if 'Cancel' is pressed on the first prompt
-        }
-        const duration = prompt("Enter event duration in hours (e.g., 2):");
-        if (duration === null) {
-            return; // Exit if 'Cancel' is pressed on the second prompt
-        }
+        if (!startTime) return; // Exit if 'Cancel' is pressed
+
+        const endTime = prompt("Enter end time in HH:MM format (e.g., 15:00):");
+        if (!endTime) return;
+
         const summary = prompt("Enter event summary:");
-        if (summary === null) {
-            return; // Exit if 'Cancel' is pressed on the third prompt
-        }
+        if (!summary) return;
+
         const description = prompt("Enter event description:");
-        if (description === null) {
-            return; // Exit if 'Cancel' is pressed on the fourth prompt
-        }
+        if (!description) return;
 
-        if (startTime && duration && summary && description) {
-            const formattedDate = `${String(year)}${String(month + 1).padStart(2, '0')}${String(dateSelected).padStart(2, '0')}`;
+        // Add the event to the `items` array
+        const formattedDate = `${String(year)}${String(month + 1).padStart(2, '0')}${String(dateSelected).padStart(2, '0')}`;
+        await addEvent(
+            `UID${Date.now()}`,
+            formattedDate,
+            startTime.split(':').join(''),
+            endTime.split(':').join(''),
+            summary,
+            description
+        );
 
-            // Calculate the end time
-            const [startHour, startMinute] = startTime.split(':').map(num => parseInt(num, 10));
-            const endHour = startHour + parseInt(duration, 10);
-            const endTime = `${String(endHour).padStart(2, '0')}${String(startMinute).padStart(2, '0')}`;
+        // Create the event element
+        const eventDiv = createElement('div', 'event');
+        const eventTime = createElement('div', 'event-time', `${startTime} - ${endTime}`);
+        const eventSummary = createElement('div', 'event-summary', summary);
 
-            addEvent(
-                `UID${Date.now()}`, // Generate a UID based on timestamp
-                formattedDate, // Add date to the event object
-                startTime.split(':').join(''), // Convert start time to HHMM format
-                endTime.split(':').join(''), // Convert end time to HHMM format
-                summary,
-                description
-            );
+        eventDiv.appendChild(eventTime);
+        eventDiv.appendChild(eventSummary);
 
-            // Re-render the calendar to include the new event
-            printEvents();
-            generateCalendar(year, month);
-        }
+        // Append the event to the correct day's event container
+        dayContainer.appendChild(eventDiv);
     });
-});
+}); //add event listener to the add event button
 
 
 

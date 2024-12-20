@@ -1,0 +1,18 @@
+[
+  {
+    "uid": "TEST",
+    "date": "20241201",
+    "startHour": "11:00",
+    "endHour": "12:00",
+    "summary": "summary",
+    "description": "description"
+  },
+  {
+    "uid": "TEST",
+    "date": "20241212",
+    "startHour": "11:00",
+    "endHour": "12:00",
+    "summary": "summary 2",
+    "description": "description"
+  }
+]

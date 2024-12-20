@@ -37,6 +37,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    height: 100%;
     font-family: Arial, sans-serif;
     font-size: 14px;
     color: #333;
@@ -87,6 +88,7 @@ body {
     .day-events-container {
         display: flex;
         flex-direction: column;
+        height: 100%;
 
     }
 
@@ -119,4 +121,23 @@ body {
     border: 1px solid rebeccapurple; /* Orange border */
     border-radius: 8px;
     color: #333; /* Darker text for contrast */
+}
+
+
+/*TEST*/
+.event {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 0;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    background-color: #f9f9f9;
+}
+.event-time {
+    font-weight: bold;
+}
+.event-summary {
+    font-size: 0.9em;
+    color: #555;
 }
