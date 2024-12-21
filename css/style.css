@@ -84,6 +84,7 @@ body {
                 transform: scale(1.1);
             }
         }
+
     }
 
     .day-events-container {
@@ -130,24 +131,55 @@ body {
 
 
 /*TEST*/
+
 .event {
     display: flex;
-    justify-content: space-between;
     margin: 5px 0;
     padding: 5px;
     border: 1px solid #ddd;
     border-radius: 3px;
     background-color: #f9f9f9;
-}
+    .event-time {
+        display: flex;
+        font-size: 0.8em; /* Adjust to your desired size */
+        color: #555; /* Optional: Adjust the color */
+        font-weight: normal; /* Optional: Adjust the weight */
+    }
 
-.event-time {
-    font-weight: bold;
-}
+    .event-time .event-startHour,
+    .event-time .event-endHour,
+    .event-time span {
+        font-size: 0.8em; /* Ensure child elements inherit or override this size */
+    }
 
-.event-summary {
 
-    font-size: 0.9em;
-    color: #555;
+    .event-summary {
+        width: 100%;
+        text-align: end;
+        padding-right: 5px;
+        font-size: 0.9em;
+        color: #555;
+    }
+    .remove-event-button {
+        cursor: pointer;
+        height: 100%; /* Take the full height of the parent */
+        aspect-ratio: 1/1;
+        background-color: transparent; /* Set background to transparent */
+        border: 1px solid #cdcdcd;
+        font-size: 0.9em;
+        color: #555;
+        font-weight: bold;
+        text-align: center;
+        display: flex; /* Align text properly */
+        justify-content: center; /* Center horizontally */
+        align-items: center; /* Center vertically */
+    }
+
+    .remove-event-button:hover {
+        background-color: red; /* Highlight the entire button */
+        color: white; /* Change text color */
+        transform: scale(1.1); /* Slightly enlarge the button */
+    }
 }
 
 .navigation-container {

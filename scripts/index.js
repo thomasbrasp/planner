@@ -15,6 +15,23 @@ const createElement = (elementType, elementClass, elementText) => {
     return element;
 };
 const addEvent = (uid, date, startHour, endHour, summary, description) => {
+    // Check for duplicate UID
+    if (items.some(event => event.uid === uid)) {
+        console.error(`Event with UID ${uid} already exists.`);
+        return;
+    }
+
+    // Check for overlapping events
+    if (items.some(event =>
+        event.date === date && // Same date
+        !(endHour <= event.startHour || startHour >= event.endHour) // No overlap condition
+    )) {
+        console.error('Event overlaps with an existing event.');
+        alert('This event overlaps with an existing event. Please choose a different time.');
+        return;
+    }
+
+    // Add new event
     let newEvent = {
         uid: uid,
         date: date,
@@ -23,11 +40,23 @@ const addEvent = (uid, date, startHour, endHour, summary, description) => {
         summary: summary,
         description: description,
     };
+
     items.push(newEvent);
-    printEvents();
+    printEvents(); // Log updated events
+    fillCalender(); // Re-render calendar
 
     return items;
-} //add events to items
+}; //add events to items
+
+const removeEvent = (uid) => {
+    const eventIndex = items.findIndex(event => event.uid === uid);
+    if (eventIndex !== -1) {
+        items.splice(eventIndex, 1); // Remove the event from the array
+        fillCalender(); // Refresh the calendar
+        printEvents(); // Optionally log and save the updated events
+    }
+};
+
 
 const printEvents = () => {
     console.clear();
@@ -86,6 +115,20 @@ const fillCalender = () => {
         eventDiv.appendChild(eventTime);
         eventDiv.appendChild(eventSummary);
 
+        const removeEventButton = createElement('button', 'remove-event-button', 'x');
+        removeEventButton.id = item.uid + '-remove';
+        eventDiv.appendChild(removeEventButton);
+
+        removeEventButton.addEventListener('click', e => {
+            const event = items.find(item => item.uid + '-remove' === e.target.id);
+            if (!event) return; // Ensure the event exists
+
+            const confirmation = confirm(`Are you sure you want to remove the event: ${event.summary}?`);
+            if (confirmation) {
+                removeEvent(event.uid);
+            }
+        });
+
         // Append the event to the correct day's event container
         x.appendChild(eventDiv);
 
@@ -94,6 +137,11 @@ const fillCalender = () => {
             const event = items.find(item => item.uid + '-start' === e.target.id);
             if (!event) return; // Ensure the event exists
             const newStartHour = prompt(`Change start time from ${event.startHour} to:`);
+
+            if (!/^([01]\d|2[0-3])([0-5]\d)$/.test(newStartHour)) { // Validate the input
+                alert('Please enter a valid time in HH:MM format (24-hour).');
+                return;
+            }
 
             if (newStartHour !== null && newStartHour.trim() !== '') { // Check if a value is provided
                 const index = items.indexOf(event);
@@ -106,6 +154,11 @@ const fillCalender = () => {
             const event = items.find(item => item.uid + '-end' === e.target.id);
             if (!event) return; // Ensure the event exists
             const newEndHour = prompt(`Change end time from ${event.endHour} to:`);
+
+            if (!/^([01]\d|2[0-3])([0-5]\d)$/.test(newEndHour)) { // Validate the input
+                alert('Please enter a valid time in HH:MM format (24-hour).');
+                return;
+            }
 
             if (newEndHour !== null && newEndHour.trim() !== '') { // Check if a value is provided
                 const index = items.indexOf(event);
