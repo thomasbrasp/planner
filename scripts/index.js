@@ -82,108 +82,48 @@ const fetchItems = async () => {
 }
 
 const fillCalender = () => {
-
     document.querySelectorAll('.day-events-container').forEach(container => {
         container.innerHTML = ""; // Fully clear each container
     });
+
     items.sort((a, b) => a.startHour.localeCompare(b.startHour)).forEach(item => {
-        const x = document.getElementById(item.date);
-        if (!x) {
-            return;
-        }
-        console.log(x)
-        // Create the event element
+        const dayContainer = document.getElementById(item.date);
+        if (!dayContainer) return;
 
         const eventDiv = createElement('div', 'event');
         eventDiv.id = item.uid;
+
         const eventTime = createElement('div', 'event-time');
         const eventStartHour = createElement('div', 'event-startHour', item.startHour);
-        eventStartHour.id = item.uid + '-start';
         const eventEndHour = createElement('div', 'event-endHour', item.endHour);
-        eventEndHour.id = item.uid + '-end';
-        eventTime.appendChild(eventStartHour);
-        const span = createElement('span')
-        span.innerHTML = `:`
-        eventTime.appendChild(span);
 
+        eventTime.appendChild(eventStartHour);
+        eventTime.appendChild(createElement('span', '', ':'));
         eventTime.appendChild(eventEndHour);
 
         const eventSummary = createElement('div', 'event-summary', item.summary);
-        eventSummary.id = item.uid + '-summary';
 
+        const removeEventButton = createElement('button', 'remove-event-button', 'x');
+        removeEventButton.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent opening the form when removing
+            const confirmation = confirm(`Are you sure you want to remove the event: ${item.summary}?`);
+            if (confirmation) removeEvent(item.uid);
+        });
 
         eventDiv.appendChild(eventTime);
         eventDiv.appendChild(eventSummary);
-
-        const removeEventButton = createElement('button', 'remove-event-button', 'x');
-        removeEventButton.id = item.uid + '-remove';
         eventDiv.appendChild(removeEventButton);
 
-        removeEventButton.addEventListener('click', e => {
-            const event = items.find(item => item.uid + '-remove' === e.target.id);
-            if (!event) return; // Ensure the event exists
-
-            const confirmation = confirm(`Are you sure you want to remove the event: ${event.summary}?`);
-            if (confirmation) {
-                removeEvent(event.uid);
-            }
+        // Add click listener to open the form for editing
+        eventDiv.addEventListener('click', () => {
+            showFormContainer(item); // Pass the current event to the form
         });
 
-        // Append the event to the correct day's event container
-        x.appendChild(eventDiv);
+        dayContainer.appendChild(eventDiv);
+    });
+};
 
 
-        eventStartHour.addEventListener('click', e => {
-            const event = items.find(item => item.uid + '-start' === e.target.id);
-            if (!event) return; // Ensure the event exists
-            const newStartHour = prompt(`Change start time from ${event.startHour} to:`);
-
-            if (!/^([01]\d|2[0-3])([0-5]\d)$/.test(newStartHour)) { // Validate the input
-                alert('Please enter a valid time in HH:MM format (24-hour).');
-                return;
-            }
-
-            if (newStartHour !== null && newStartHour.trim() !== '') { // Check if a value is provided
-                const index = items.indexOf(event);
-                event.startHour = newStartHour;
-                items[index] = event;
-                fillCalender();
-            }
-        });
-        eventEndHour.addEventListener('click', e => {
-            const event = items.find(item => item.uid + '-end' === e.target.id);
-            if (!event) return; // Ensure the event exists
-            const newEndHour = prompt(`Change end time from ${event.endHour} to:`);
-
-            if (!/^([01]\d|2[0-3])([0-5]\d)$/.test(newEndHour)) { // Validate the input
-                alert('Please enter a valid time in HH:MM format (24-hour).');
-                return;
-            }
-
-            if (newEndHour !== null && newEndHour.trim() !== '') { // Check if a value is provided
-                const index = items.indexOf(event);
-                event.endHour = newEndHour;
-                items[index] = event;
-                fillCalender();
-            }
-        });
-        eventSummary.addEventListener('click', e => {
-            const event = items.find(item => item.uid + '-summary' === e.target.id);
-            if (!event) return; // Ensure the event exists
-            const newSummary = prompt(`Change summary from ${event.summary} to:`);
-
-            if (newSummary !== null && newSummary.trim() !== '') { // Check if a value is provided
-                const index = items.indexOf(event);
-                event.summary = newSummary;
-                items[index] = event;
-                fillCalender();
-            }
-        });
-
-        printEvents();
-
-    })
-}
 
 const generateCalendar = async (year = new Date().getFullYear(), month = new Date().getMonth()) => {
 
@@ -293,15 +233,16 @@ const createTimeInput = (labelText, idPrefix) => {
     return timeContainer;
 };
 
-const showFormContainer = () => {
+const showFormContainer = (existingEvent = null) => {
+    // Create the form container
     const formContainer = createElement('div', 'form-container');
-    const formTitle = createElement('h3', '', 'Add Event');
+    const formTitle = createElement('h3', '', existingEvent ? 'Edit Event' : 'Add Event');
 
-    // Create input fields using the helper function
-    const startTimeContainer = createTimeInput('Start', 'start');
-    const endTimeContainer = createTimeInput('End', 'end');
+    // Create start and end time inputs
+    const startTimeContainer = createTimeInput('Start Time', 'start');
+    const endTimeContainer = createTimeInput('End Time', 'end');
 
-    // Summary and Description Inputs
+    // Create summary and description inputs
     const inputSummary = createElement('input', 'summary-form');
     inputSummary.type = 'text';
     inputSummary.placeholder = 'Summary';
@@ -309,8 +250,29 @@ const showFormContainer = () => {
     const inputDescription = createElement('textarea', 'description-form');
     inputDescription.placeholder = 'Description';
 
+    // Pre-fill fields if editing an existing event
+    if (existingEvent) {
+        // Extract and pad start and end hours/minutes
+        const startHour = existingEvent.startHour.substring(0, 2).padStart(2, '0'); // Ensure 2 digits
+        const startMinute = existingEvent.startHour.substring(3, 5).padStart(2, '0'); // Ensure 2 digits
+        const endHour = existingEvent.endHour.substring(0, 2).padStart(2, '0'); // Ensure 2 digits
+        const endMinute = existingEvent.endHour.substring(3, 5).padStart(2, '0'); // Ensure 2 digits
+
+        // Assign values to the input fields
+        startTimeContainer.querySelector('.start-hour').value = startHour;
+        startTimeContainer.querySelector('.start-minute').value = startMinute;
+        endTimeContainer.querySelector('.end-hour').value = endHour;
+        endTimeContainer.querySelector('.end-minute').value = endMinute;
+
+        // Fill other fields
+        inputSummary.value = existingEvent.summary || '';
+        inputDescription.value = existingEvent.description || '';
+    }
+
+
+
     // Submit and Close Buttons
-    const submitButton = createElement('button', '', 'Submit');
+    const submitButton = createElement('button', '', existingEvent ? 'Save Changes' : 'Add Event');
     const closeButton = createElement('button', '', 'Close');
 
     closeButton.addEventListener('click', () => {
@@ -325,17 +287,27 @@ const showFormContainer = () => {
         const summary = inputSummary.value;
         const description = inputDescription.value;
 
-        if (startHour && startMinute && endHour && endMinute && summary) {
-            const startTime = `${startHour}:${startMinute}`;
-            const endTime = `${endHour}:${endMinute}`;
-            console.log({ startTime, endTime, summary, description });
-            document.body.removeChild(formContainer);
+        const startTime = `${startHour}:${startMinute}`;
+        const endTime = `${endHour}:${endMinute}`;
+
+        if (existingEvent) {
+            // Update the existing event
+            existingEvent.startHour = startTime;
+            existingEvent.endHour = endTime;
+            existingEvent.summary = summary;
+            existingEvent.description = description;
         } else {
-            alert('Please fill in all required fields!');
+            // Add a new event
+            const uid = `UID${Date.now()}`;
+            const date = new Date().toISOString().split('T')[0]; // Replace this with your actual date logic
+            addEvent(uid, date, startTime, endTime, summary, description);
         }
+
+        fillCalender(); // Refresh the calendar
+        document.body.removeChild(formContainer); // Close the form
     });
 
-    // Append elements to the form container
+    // Append all elements to the form container
     formContainer.appendChild(formTitle);
     formContainer.appendChild(startTimeContainer);
     formContainer.appendChild(endTimeContainer);
@@ -344,9 +316,13 @@ const showFormContainer = () => {
     formContainer.appendChild(submitButton);
     formContainer.appendChild(closeButton);
 
-    // Add form container to the body
+    // Add the form container to the document body
     document.body.appendChild(formContainer);
 };
+
+
+
+
 
 document.querySelectorAll('.add-event-button').forEach(button => {
     button.addEventListener('click', showFormContainer);
