@@ -92,28 +92,42 @@ const fillCalender = () => {
 
         eventStartHour.addEventListener('click', e => {
             const event = items.find(item => item.uid + '-start' === e.target.id);
-            const index = items.indexOf(event)
-            event.startHour = prompt(`Change end time from ${item.startHour} to: `);
+            if (!event) return; // Ensure the event exists
+            const newStartHour = prompt(`Change start time from ${event.startHour} to:`);
 
-            items[index] = event;
-            fillCalender()
+            if (newStartHour !== null && newStartHour.trim() !== '') { // Check if a value is provided
+                const index = items.indexOf(event);
+                event.startHour = newStartHour;
+                items[index] = event;
+                fillCalender();
+            }
         });
         eventEndHour.addEventListener('click', e => {
             const event = items.find(item => item.uid + '-end' === e.target.id);
-            const index = items.indexOf(event)
-            event.endHour = prompt(`Change end time from ${item.endHour} to: `);
+            if (!event) return; // Ensure the event exists
+            const newEndHour = prompt(`Change end time from ${event.endHour} to:`);
 
-            items[index] = event;
-            fillCalender()
+            if (newEndHour !== null && newEndHour.trim() !== '') { // Check if a value is provided
+                const index = items.indexOf(event);
+                event.endHour = newEndHour;
+                items[index] = event;
+                fillCalender();
+            }
         });
+
         eventSummary.addEventListener('click', e => {
             const event = items.find(item => item.uid + '-summary' === e.target.id);
-            const index = items.indexOf(event)
-            event.summary = prompt(`Change end time from ${item.summary} to: `);
+            if (!event) return; // Ensure the event exists
+            const newSummary = prompt(`Change summary from ${event.summary} to:`);
 
-            items[index] = event;
-            fillCalender()
+            if (newSummary !== null && newSummary.trim() !== '') { // Check if a value is provided
+                const index = items.indexOf(event);
+                event.summary = newSummary;
+                items[index] = event;
+                fillCalender();
+            }
         });
+
         printEvents();
 
     })
