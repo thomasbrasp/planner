@@ -193,6 +193,34 @@
 //         });
 //     });
 // }
+// const fillCalender = () => {
+//     items.forEach(e => {
+//         // Create the event element
+//         const x = document.getElementById(e.date);
+//         const eventDiv = createElement('div', 'event');
+//         eventDiv.id = e.uid;
+//         const eventTime = createElement('div', 'event-time', `${e.startHour} - ${e.endHour}`);
+//         const eventSummary = createElement('div', 'event-summary', e.summary);
+//
+//         eventDiv.appendChild(eventTime);
+//         eventDiv.appendChild(eventSummary);
+//
+//         // Append the event to the correct day's event container
+//         x.appendChild(eventDiv);
+//         eventDiv.addEventListener('click', async e => {
+//             console.log(e.target.id);
+//             const event = items.find(item => item.uid === e.target.id)
+//             const index = items.indexOf(event)
+//             console.log(event)
+//             console.log(items)
+//             console.log(e.target.id)
+//             event.startHour = prompt("Enter start time in HH:MM format (e.g., 13:00):");
+//             items[index] = event;
+//             await generateCalendar();
+//             fillCalender();
+//         });
+//     });
+// }
 
 
 
@@ -200,12 +228,218 @@
 
 
 
+//an option to handle the form
+// const showFormContainer = () => {
+//     const formContainer = createElement('div', 'form-container');
+//     const formTitle = createElement('h3', '', 'Add Event');
+//
+//     // Create custom dropdowns
+//     const inputStartHour = createElement('select', '');
+//     const inputStartMinute = createElement('select', '');
+//     const inputEndHour = createElement('select', '');
+//     const inputEndMinute = createElement('select', '');
+//
+//     // Populate dropdowns with 24-hour options
+//     for (let i = 0; i < 24; i++) {
+//         const hourOption = createElement('option', '', i.toString().padStart(2, '0'));
+//         inputStartHour.appendChild(hourOption);
+//         inputEndHour.appendChild(hourOption.cloneNode(true));
+//     }
+//     for (let i = 0; i < 60; i++) {
+//         const minuteOption = createElement('option', '', i.toString().padStart(2, '0'));
+//         inputStartMinute.appendChild(minuteOption);
+//         inputEndMinute.appendChild(minuteOption.cloneNode(true));
+//     }
+//
+//     const submitButton = createElement('button', '', 'Submit');
+//     const closeButton = createElement('button', '', 'Close');
+//
+//     closeButton.addEventListener('click', () => {
+//         document.body.removeChild(formContainer);
+//     });
+//
+//     submitButton.addEventListener('click', () => {
+//         const startTime = `${inputStartHour.value}:${inputStartMinute.value}`;
+//         const endTime = `${inputEndHour.value}:${inputEndMinute.value}`;
+//         console.log({ startTime, endTime });
+//         document.body.removeChild(formContainer);
+//     });
+//     formContainer.appendChild(formTitle);
+//     formContainer.appendChild(inputStartHour);
+//     formContainer.appendChild(inputStartMinute);
+//     formContainer.appendChild(inputEndHour);
+//     formContainer.appendChild(inputEndMinute);
+//     formContainer.appendChild(submitButton);
+//     formContainer.appendChild(closeButton);
+//     document.body.appendChild(formContainer);
+// };
 
+// /* Center the form container in the middle of the screen */
+// .form-container {
+//     position: fixed;
+//     top: 50%;
+//     left: 50%;
+//     transform: translate(-50%, -50%);
+//     z-index: 1000; /* Ensure it appears above other elements */
+//     width: 350px; /* Adjust width as needed */
+//     padding: 20px;
+//     background-color: white; /* Background color for the form */
+//     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
+//     border-radius: 8px; /* Rounded corners for a smooth appearance */
+//     text-align: center; /* Center content inside the form */
+//     border: 1px solid #ddd; /* Optional border for the form */
+// }
+//
+// /* Form title styling */
+// .form-container h3 {
+//     margin-bottom: 20px; /* Space below the title */
+//     font-size: 1.5em; /* Larger font size */
+//     color: #333; /* Dark gray for better readability */
+// }
+//
+// /* Styling for dropdowns */
+// .form-container select {
+//     width: 100px; /* Adjust width as needed */
+//     margin: 5px; /* Add spacing between dropdowns */
+//     padding: 8px; /* Add padding for clickable area */
+//     border: 1px solid #ccc; /* Subtle border */
+//     border-radius: 4px; /* Rounded corners */
+//     background-color: #f9f9f9; /* Light background for contrast */
+//     font-size: 1em; /* Adjust font size */
+//     color: #333; /* Dark text for readability */
+//     cursor: pointer; /* Pointer cursor on hover */
+// }
+//
+// /* Styling for buttons */
+// .form-container button {
+//     margin: 10px 5px; /* Add spacing between buttons */
+//     padding: 10px 15px; /* Padding for a comfortable clickable area */
+//     border: none; /* Remove default border */
+//     border-radius: 4px; /* Rounded corners for consistency */
+//     background-color: #007bff; /* Blue background color */
+//     color: white; /* White text for contrast */
+//     font-size: 1em; /* Adjust font size */
+//     cursor: pointer; /* Pointer cursor on hover */
+// }
+//
+// /* Button hover effect */
+// .form-container button:hover {
+//     background-color: #0056b3; /* Darker blue on hover */
+// }
+//
+// /* Optional: Add some responsiveness for smaller screens */
+// @media (max-width: 500px) {
+// .form-container {
+//         width: 90%; /* Make the form width smaller on small screens */
+//         padding: 15px; /* Reduce padding */
+//     }
+// .form-container select {
+//         width: 80px; /* Adjust width for dropdowns */
+//     }
+// .form-container button {
+//         width: 100%; /* Make buttons full width */
+//         margin: 5px 0; /* Stack buttons vertically */
+//     }
+// }
 
-
-
-
-
+//correct way
+// const showFormContainer = () => {
+//     // Create the form container
+//     const formContainer = createElement('div', 'form-container');
+//
+//     // Add content inside the form
+//     const formTitle = createElement('h3', '', 'Add Event');
+//     const inputStartTime = createElement('input', 'start-time-form');
+//     inputStartTime.type = 'time';
+//     inputStartTime.placeholder = 'Start Time';
+//
+//     const inputEndTime = createElement('input', 'end-time-form');
+//     inputEndTime.type = 'time';
+//     inputEndTime.placeholder = 'End Time';
+//
+//     const inputSummary = createElement('input', 'summary-form');
+//     inputSummary.type = 'text';
+//     inputSummary.placeholder = 'Summary';
+//
+//     const inputDescription = createElement('textarea', 'description-form');
+//     inputDescription.placeholder = 'Description';
+//
+//     const submitButton = createElement('button', '', 'Submit');
+//     const closeButton = createElement('button', '', 'Close');
+//
+//     // Add event listeners for buttons
+//     closeButton.addEventListener('click', () => {
+//         document.body.removeChild(formContainer);
+//     });
+//
+//     submitButton.addEventListener('click', () => {
+//         const startTime = inputStartTime.value;
+//         const endTime = inputEndTime.value;
+//         const summary = inputSummary.value;
+//         const description = inputDescription.value;
+//
+//         if (startTime && endTime && summary) {
+//             // Process the event data here
+//             console.log({ startTime, endTime, summary, description });
+//
+//             // Close the form container after submitting
+//             document.body.removeChild(formContainer);
+//         } else {
+//             alert('Please fill in all required fields!');
+//         }
+//     });
+//
+//     // Append all inputs and buttons to the form container
+//     formContainer.appendChild(formTitle);
+//     formContainer.appendChild(inputStartTime);
+//     formContainer.appendChild(inputEndTime);
+//     formContainer.appendChild(inputSummary);
+//     formContainer.appendChild(inputDescription);
+//     formContainer.appendChild(submitButton);
+//     formContainer.appendChild(closeButton);
+//
+//     // Append the form container to the body
+//     document.body.appendChild(formContainer);
+// };
+//
+// .form-container {
+//     position: fixed;
+//     top: 50%;
+//     left: 50%;
+//     transform: translate(-50%, -50%);
+//     z-index: 1000; /* Ensure it's above other elements */
+//     width: 300px; /* Adjust width as needed */
+//     padding: 20px;
+//     background-color: white; /* Popup background color */
+//     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow for popup effect */
+//     border-radius: 8px; /* Rounded corners */
+//     text-align: center; /* Center content alignment */
+//     border: 1px solid #ddd; /* Optional border */
+// }
+//
+// .form-container input,
+// .form-container textarea {
+//     display: block;
+//     width: 100%;
+//     margin-bottom: 10px;
+//     padding: 8px;
+//     border: 1px solid #ccc;
+//     border-radius: 4px;
+// }
+//
+// .form-container button {
+//     margin: 5px;
+//     padding: 8px 12px;
+//     border: none;
+//     border-radius: 4px;
+//     background-color: #007bff;
+//     color: white;
+//     cursor: pointer;
+// }
+//
+// .form-container button:hover {
+//     background-color: #0056b3;
+// }
 
 
 
