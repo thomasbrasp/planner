@@ -114,7 +114,6 @@ const fillCalender = () => {
                 fillCalender();
             }
         });
-
         eventSummary.addEventListener('click', e => {
             const event = items.find(item => item.uid + '-summary' === e.target.id);
             if (!event) return; // Ensure the event exists
