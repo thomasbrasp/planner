@@ -182,6 +182,11 @@ body {
     }
 }
 
+/*form*/
+.summary-form {
+    height: 30px;
+}
+
 .navigation-container {
     font-size: 1.25rem;
     .prev-button {
@@ -221,7 +226,6 @@ body {
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 1em; /* Ensure consistent font size */
-
 }
 
 /* Dropdown styling for time inputs */
@@ -289,15 +293,16 @@ body {
 /* Label styling (kept minimal) */
 .time-container label {
     flex-shrink: 0; /* Prevent label from shrinking */
-    width: 60px; /* Fixed width for labels */
+    width: 40px; /* Fixed width for labels */
     text-align: right;
     font-weight: bold;
 }
 
 /* Input fields inside time-container */
 .time-container input {
-    flex: 1; /* Distribute remaining space equally */
-    padding: 8px; /* Add padding for a better look */
+    /*flex: 1; !* Distribute remaining space equally *!*/
+    width: 75px;
+    /*padding: 8px; !* Add padding for a better look *!*/
     border: 1px solid #ccc; /* Light border */
     border-radius: 4px; /* Rounded corners */
     font-size: 1em; /* Consistent font size */

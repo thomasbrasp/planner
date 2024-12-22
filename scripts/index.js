@@ -1,5 +1,7 @@
 "use strict";
 
+// TODO: when event gets changed, visually the event is changed but not behind the curtains
+
 const items = [];
 const headersWeekDays = ["Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag"];
 
@@ -239,8 +241,8 @@ const showFormContainer = (existingEvent = null) => {
     const formTitle = createElement('h3', '', existingEvent ? 'Edit Event' : 'Add Event');
 
     // Create start and end time inputs
-    const startTimeContainer = createTimeInput('Start Time', 'start');
-    const endTimeContainer = createTimeInput('End Time', 'end');
+    const startTimeContainer = createTimeInput('Start', 'start');
+    const endTimeContainer = createTimeInput('End', 'end');
 
     // Create summary and description inputs
     const inputSummary = createElement('input', 'summary-form');
@@ -280,6 +282,7 @@ const showFormContainer = (existingEvent = null) => {
     });
 
     submitButton.addEventListener('click', () => {
+        // Get the start and end times
         const startHour = startTimeContainer.querySelector('.start-hour').value.padStart(2, '0');
         const startMinute = startTimeContainer.querySelector('.start-minute').value.padStart(2, '0');
         const endHour = endTimeContainer.querySelector('.end-hour').value.padStart(2, '0');
@@ -287,11 +290,12 @@ const showFormContainer = (existingEvent = null) => {
         const summary = inputSummary.value;
         const description = inputDescription.value;
 
-        const startTime = `${startHour}:${startMinute}`;
-        const endTime = `${endHour}:${endMinute}`;
+        // Concatenate time values to match the HHMM format
+        const startTime = `${startHour}${startMinute}`;
+        const endTime = `${endHour}${endMinute}`;
 
         if (existingEvent) {
-            // Update the existing event
+            // Update the existing event with HHMM format
             existingEvent.startHour = startTime;
             existingEvent.endHour = endTime;
             existingEvent.summary = summary;
@@ -302,10 +306,11 @@ const showFormContainer = (existingEvent = null) => {
             const date = new Date().toISOString().split('T')[0]; // Replace this with your actual date logic
             addEvent(uid, date, startTime, endTime, summary, description);
         }
-
+        printEvents();
         fillCalender(); // Refresh the calendar
         document.body.removeChild(formContainer); // Close the form
     });
+
 
     // Append all elements to the form container
     formContainer.appendChild(formTitle);
@@ -319,10 +324,6 @@ const showFormContainer = (existingEvent = null) => {
     // Add the form container to the document body
     document.body.appendChild(formContainer);
 };
-
-
-
-
 
 document.querySelectorAll('.add-event-button').forEach(button => {
     button.addEventListener('click', showFormContainer);
